@@ -1,74 +1,87 @@
 import 'package:flutter/material.dart';
-import 'package:elder_care/core/services/auth_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  bool _isLoading = false;
+  final _auth = FirebaseAuth.instance;
 
-  String email = '';
-  String senha = '';
-  bool isLoading = false;
+  Future<void> _login() async {
+    setState(() => _isLoading = true);
+    try {
+      await _auth.signInWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+      Navigator.pushReplacementNamed(context, "/home");
+    } on FirebaseAuthException catch (e) {
+      String msg = "Erro desconhecido";
+      if (e.code == "user-not-found") msg = "Usuário não encontrado";
+      if (e.code == "wrong-password") msg = "Senha incorreta";
+      if (e.code == "invalid-email") msg = "E-mail inválido";
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(msg)),
+      );
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Login")),
+      appBar: AppBar(title: const Text("Login")),
       body: Padding(
-        padding: EdgeInsets.all(16),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              TextFormField(
-                decoration: InputDecoration(labelText: "Email"),
-                keyboardType: TextInputType.emailAddress,
-                onSaved: (val) => email = val!.trim(),
-                validator: (val) => val!.isEmpty ? "Campo obrigatório" : null,
-              ),
-              TextFormField(
-                decoration: InputDecoration(labelText: "Senha"),
-                obscureText: true,
-                onSaved: (val) => senha = val!.trim(),
-                validator: (val) => val!.isEmpty ? "Campo obrigatório" : null,
-              ),
-              SizedBox(height: 16),
-              ElevatedButton(
-                child: isLoading ? CircularProgressIndicator(color: Colors.white) : Text("Entrar"),
-                onPressed: isLoading ? null : _loginUsuario,
-              ),
-            ],
-          ),
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            TextField(
+              controller: _emailController,
+              decoration: const InputDecoration(labelText: "E-mail"),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _passwordController,
+              obscureText: true,
+              decoration: const InputDecoration(labelText: "Senha"),
+            ),
+            const SizedBox(height: 20),
+            _isLoading
+                ? const CircularProgressIndicator()
+                : Column(
+                    children: [
+                      ElevatedButton(
+                        onPressed: _login,
+                        child: const Text("Entrar"),
+                      ),
+                      const SizedBox(height: 8),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pushNamed(context, "/register");
+                        },
+                        child: const Text("Criar conta"),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pushNamed(context, "/forgot_password");
+                        },
+                        child: const Text("Esqueci minha senha"),
+                      ),
+                    ],
+                  ),
+          ],
         ),
       ),
     );
-  }
-
-  Future<void> _loginUsuario() async {
-    if (!_formKey.currentState!.validate()) return;
-    _formKey.currentState!.save();
-
-    setState(() => isLoading = true);
-
-    try {
-      // Login usando AuthService
-      final uid = await AuthService.loginUsuario(email, senha);
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Login realizado com sucesso!")),
-      );
-
-      // Aqui você pode redirecionar para a Home do cuidador
-      Navigator.pushReplacementNamed(context, '/home');
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Erro ao fazer login: $e")),
-      );
-    } finally {
-      setState(() => isLoading = false);
-    }
   }
 }

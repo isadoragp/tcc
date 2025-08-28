@@ -17,7 +17,9 @@ plugins {
 
 dependencies {
   // Import the Firebase BoM
-  implementation(platform("com.google.firebase:firebase-bom:34.1.0"))
+  implementation(platform("com.google.firebase:firebase-bom:34.1.0")
+  implementation platform('com.google.firebase:firebase-bom:32.2.2')
+implementation 'com.google.firebase:firebase-analytics')
 
 
   // TODO: Add the dependencies for Firebase products you want to use
@@ -50,3 +52,5 @@ subprojects {
 tasks.register<Delete>("clean") {
     delete(rootProject.layout.buildDirectory)
 }
+
+apply plugin: 'com.google.gms.google-services'

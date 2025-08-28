@@ -4,6 +4,8 @@ import '../../core/services/db_service.dart';
 import '../../core/model/usuario.dart';
 
 class CadastroScreen extends StatefulWidget {
+  const CadastroScreen({super.key});
+
   @override
   _CadastroScreenState createState() => _CadastroScreenState();
 }
@@ -60,8 +62,8 @@ class _CadastroScreenState extends State<CadastroScreen> {
               ),
               SizedBox(height: 16),
               ElevatedButton(
-                child: isLoading ? CircularProgressIndicator(color: Colors.white) : Text("Cadastrar"),
                 onPressed: isLoading ? null : _cadastrarUsuario,
+                child: isLoading ? CircularProgressIndicator(color: Colors.white) : Text("Cadastrar"),
               ),
             ],
           ),
