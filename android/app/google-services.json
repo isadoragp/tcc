@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "24740102459",
+    "project_id": "aplicativo-para-cuidadores",
+    "storage_bucket": "aplicativo-para-cuidadores.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:24740102459:android:b1f6f1a97b78527104f71e",
+        "android_client_info": {
+          "package_name": "com.eldercare.tcc"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyApZyhjQ4eNEyMetE4V3SMNApxe8imSbt0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
